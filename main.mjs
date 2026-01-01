@@ -31,7 +31,7 @@ try {
     await page.locator('#user_password').fill(process.env.PASSWORD)
     await page.locator('text=ログインする').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
-    await page.locator('a[href^="/xapanel/xvps/server/detail?id="]').first().click()
+    await page.goto('https://secure.xserver.ne.jp/xapanel/login/xvps/',
     await page.locator('text=更新する').click()
     await page.locator('text=引き続き無料VPSの利用を継続する').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
