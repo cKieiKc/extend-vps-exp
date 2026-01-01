@@ -32,7 +32,7 @@ try {
     await page.locator('text=ログインする').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
 
-    await page.$$('a[href^="/xapanel/xvps/server/detail?id="]');
+    const code = await page.$$('a[href^="/xapanel/xvps/server/detail?id="]');
     
     await setTimeout(2000)
     await page.locator('text=更新する').click()
