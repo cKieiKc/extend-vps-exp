@@ -32,36 +32,35 @@ try {
     await page.locator('text=ログインする').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
 
-    // --- 修正ポイント：ここから ---
-    
-    // 1. リンクが出るのを待つ
+    // --- 修正ポイント1: 複数あるリンクのうち1つ目を確実にクリック ---
     await page.waitForSelector('a[href^="/xapanel/xvps/server/detail?id="]')
-
-    // 2. ブラウザ側で最初の1つだけクリック
     await page.$$eval('a[href^="/xapanel/xvps/server/detail?id="]', (els) => {
         if (els.length > 0) els[0].click();
     });
 
-    // 3. クリック後の遷移を待つ
-    await page.waitForNavigation({ waitUntil: 'networkidle2' })
-
-    // 4. 以降、順番に操作（locatorの引数は現在の書き方のままでも動きます）
+    // --- 修正ポイント2: 遷移を待ってから「更新する」をクリック ---
+    await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {});
     await page.locator('text=更新する').click()
     await page.locator('text=引き続き無料VPSの利用を継続する').click()
-    await page.waitForNavigation({ waitUntil: 'networkidle2' })
-
-    const body = await page.$eval('img[src^="data:"]', img => img.src)
-    const code = await fetch('https://captcha-120546510085.asia-northeast1.run.app', { method: 'POST', body }).then(r => r.text())
     
-    await page.locator('[placeholder="上の画像の数字を入力"]').fill(code)
-    await page.locator('text=無料VPSの利用を継続する').click()
+    // --- 修正ポイント3: キャプチャ画面の待機と入力後の安定化 ---
+    await page.waitForNavigation({ waitUntil: 'networkidle2' })
+    const body = await page.$eval('img[src^="data:"]', img => img.src)
+    const code = await fetch('https://captcha-120546510085.asia-northeast1.run.app', { method: 'POST', body })
+        .then(r => r.text())
+    
+    console.log(`Captcha code: ${code.trim()}`); // デバッグ用
 
-    // --- 修正ポイント：ここまで ---
+    const inputSelector = '[placeholder="上の画像の数字を入力"]';
+    await page.waitForSelector(inputSelector);
+    await page.locator(inputSelector).fill(code.trim());
+    
+    // 入力が反映されるまで少し待機（重要）
+    await setTimeout(2000);
+
+    // ボタンが複数ヒットしてエラーになるのを防ぐため .last() を使用
+    await page.locator('text=無料VPSの利用を継続する').last().click()
 
 } catch (e) {
-    console.error(e)
-} finally {
-    await setTimeout(5000)
-    await recorder.stop()
-    await browser.close()
+    console.error('エラー発生:', e)
 }
