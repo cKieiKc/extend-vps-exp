@@ -36,7 +36,7 @@ try {
 await page.$$eval('a[href^="/xapanel/xvps/server/detail?id="]', (els) => {
     if (els.length > 0) {
         els[0].click();
-        
+        await page.waitForNavigation({ waitUntil: 'networkidle2' })
     await page.locator('text=更新する').click()
     await page.locator('text=引き続き無料VPSの利用を継続する').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
