@@ -32,6 +32,7 @@ try {
     await page.locator('text=ログインする').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
     await page.locator('a[href^="/xapanel/xvps/server/detail?id="]').click()
+    await setTimeout(2000)
     await page.locator('text=更新する').click()
     await page.locator('text=引き続き無料VPSの利用を継続する').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
