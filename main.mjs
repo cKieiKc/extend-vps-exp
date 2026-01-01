@@ -32,7 +32,11 @@ try {
     await page.locator('text=ログインする').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
 
-    await page.locator('a[href^="/xapanel/xvps/server/detail?id="]:nth-of-type(1)').click();
+    await page.waitForSelector('a[href^="/xapanel/xvps/server/detail?id="]');
+await page.$$eval('a[href^="/xapanel/xvps/server/detail?id="]', (els) => {
+    if (els.length > 0) {
+        els[0].click();
+        
     await page.locator('text=更新する').click()
     await page.locator('text=引き続き無料VPSの利用を継続する').click()
     await page.waitForNavigation({ waitUntil: 'networkidle2' })
